@@ -1,6 +1,10 @@
 import { inject, ref, computed } from 'vue'
 import { type UseEventBusReturn, useDebounceFn } from '@vueuse/core'
 import type { FormEvent, FormEventType, InjectedFormGroupValue } from '../types/form'
+import { mergeConfig } from '../utils'
+// @ts-expect-error
+import appConfig from '#build/app.config'
+import { formGroup } from '#ui/ui.config'
 
 type InputProps = {
   id?: string
