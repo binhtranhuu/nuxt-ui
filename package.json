@@ -34,10 +34,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@egoist/tailwindcss-icons": "^1.8.1",
     "@headlessui/tailwindcss": "^0.2.1",
     "@headlessui/vue": "^1.7.22",
     "@iconify-json/heroicons": "^1.1.21",
+    "@nuxt/icon": "^1.0.0",
     "@nuxt/kit": "^3.12.2",
     "@nuxtjs/color-mode": "^3.4.1",
     "@nuxtjs/tailwindcss": "^6.12.0",
@@ -54,7 +54,6 @@
     "defu": "^6.1.4",
     "fuse.js": "^6.6.2",
     "lodash-es": "^4.17.21",
-    "nuxt-icon": "^0.6.10",
     "ohash": "^1.1.3",
     "pathe": "^1.1.2",
     "scule": "^1.3.0",
