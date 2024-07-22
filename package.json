@@ -1,7 +1,7 @@
 {
   "name": "@nuxt/ui",
   "version": "2.17.0",
-  "packageManager": "pnpm@9.5.0",
+  "packageManager": "pnpm@9.6.0",
   "repository": "nuxt/ui",
   "homepage": "https://ui.nuxt.com",
   "type": "module",
@@ -73,7 +73,7 @@
     "valibot": "^0.36.0",
     "valibot31": "npm:valibot@0.31.0",
     "valibot30": "npm:valibot@0.30.0",
-    "vitest": "^2.0.3",
+    "vitest": "^2.0.4",
     "vitest-environment-nuxt": "^1.0.0",
     "vue-tsc": "^2.0.16",
     "yup": "^1.4.0",
