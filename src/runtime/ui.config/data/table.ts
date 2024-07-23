@@ -1,6 +1,9 @@
 export default {
-  wrapper: 'relative overflow-x-auto',
+  wrapper: 'relative overflow-x-auto space-y-4',
   base: 'min-w-full table-fixed',
+  border: 'border border-gray-300 dark:border-gray-700',
+  rounded: 'rounded-md',
+  pagination: 'flex items-center justify-center',
   divide: 'divide-y divide-gray-300 dark:divide-gray-700',
   thead: 'relative',
   tbody: 'divide-y divide-gray-200 dark:divide-gray-800',
