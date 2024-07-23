@@ -96,15 +96,11 @@ import { upperFirst } from 'scule'
 import { defu } from 'defu'
 import { pick } from 'lodash-es'
 import { useVModel } from '@vueuse/core'
-<<<<<<< HEAD
 import UIcon from '../elements/Icon.vue'
 import UButton from '../elements/Button.vue'
 import UProgress from '../elements/Progress.vue'
 import UCheckbox from '../forms/Checkbox.vue'
 import UPagination from '../navigation/Pagination.vue'
-=======
-import { UIcon, UButton, UProgress, UCheckbox } from '#components'
->>>>>>> feat(Icon)!: migrate from `@egoist/tailwindcss-icons` to new `@nuxt/icon` (#1789)
 import { useUI } from '../../composables/useUI'
 import { mergeConfig, get } from '../../utils'
 import type { Strategy, Button, ProgressColor, ProgressAnimation } from '../../types'
@@ -137,6 +133,7 @@ interface Column {
   sort?: (a: any, b: any, direction: 'asc' | 'desc') => number
   direction?: 'asc' | 'desc'
   class?: string
+  rowClass?: string
   [key: string]: any
 }
 
