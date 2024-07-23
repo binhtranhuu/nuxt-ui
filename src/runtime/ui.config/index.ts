@@ -1,5 +1,6 @@
 // Data
 export { default as table } from './data/table'
+export { default as pdfViewer } from './data/pdfViewer'
 
 // Elements
 export { default as avatar } from './elements/avatar'
