@@ -27,16 +27,16 @@
     </slot>
 
     <UButton
-      v-for="(page, index) of displayedPages"
-      :key="`${page}-${index}`"
-      :to="typeof page === 'number' ? to?.(page) : null"
+      v-for="(_page, index) of displayedPages"
+      :key="`${_page}-${index}`"
+      :to="typeof _page === 'number' ? to?.(_page) : null"
       :size="size"
       :disabled="disabled"
-      :label="`${page}`"
-      v-bind="page === currentPage ? { ...(ui.default.activeButton || {}), ...activeButton } : { ...(ui.default.inactiveButton || {}), ...inactiveButton }"
-      :class="[{ 'pointer-events-none': typeof page === 'string', 'z-[1]': page === currentPage }, ui.base, ui.rounded]"
+      :label="`${_page}`"
+      v-bind="_page === currentPage ? { ...(ui.default.activeButton || {}), ...activeButton } : { ...(ui.default.inactiveButton || {}), ...inactiveButton }"
+      :class="[{ 'pointer-events-none': typeof _page === 'string', 'z-[1]': _page === currentPage }, ui.base, ui.rounded]"
       :ui="{ rounded: '' }"
-      @click="() => onClickPage(page)"
+      @click="() => onClickPage(_page)"
     />
 
     <slot name="next" :on-click="onClickNext">
