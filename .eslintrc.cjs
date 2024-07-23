@@ -40,6 +40,7 @@ module.exports = {
         }
       }
     ],
-    'vue/padding-line-between-blocks': ['error', 'always']
+    'vue/padding-line-between-blocks': ['error', 'always'],
+    'vue/prefer-import-from-vue': 0,
   }
 }
