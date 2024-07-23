@@ -42,14 +42,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, shallowRef, computed, onBeforeUnmount, provide, toRef, type ExtractPropTypes } from 'vue'
-import { uploadContentProps, uploadContextKey, uploadProps } from '../../utils/upload'
+import { defineComponent, shallowRef, computed, onBeforeUnmount, provide, toRef } from 'vue'
+import { uploadContextKey, uploadProps, type UploadContentInstance, type UploadContentProps } from '../../utils/upload'
 import { useUpload } from '../../composables/useUpload'
 import UploadList from './UploadList.vue'
 import UploadContent from './UploadContent.vue'
-
-type UploadContentInstance = InstanceType<typeof UploadContent>;
-type UploadContentProps = ExtractPropTypes<typeof uploadContentProps>;
 
 export default defineComponent({
   components: { UploadList, UploadContent },

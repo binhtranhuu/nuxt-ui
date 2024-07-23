@@ -89,9 +89,9 @@ export default defineComponent({
   },
   inheritAttrs: false,
   props: {
-    modelValue: {
+    page: {
       type: Number,
-      required: true
+      default: 1
     },
     pageCount: {
       type: Number,
@@ -99,12 +99,12 @@ export default defineComponent({
     },
     total: {
       type: Number,
-      required: true
+      default: 10
     },
     max: {
       type: Number,
       default: 7,
-      validate (value) {
+      validate (value: number) {
         return value >= 5 && value < Number.MAX_VALUE
       }
     },
@@ -168,16 +168,16 @@ export default defineComponent({
       default: () => ({})
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:page', 'change'],
   setup (props, { emit }) {
     const { ui, attrs } = useUI('pagination', toRef(props, 'ui'), config, toRef(props, 'class'))
 
     const currentPage = computed({
       get () {
-        return props.modelValue
+        return props.page
       },
       set (value) {
-        emit('update:modelValue', value)
+        emit('update:page', value)
       }
     })
 
@@ -254,6 +254,7 @@ export default defineComponent({
       }
 
       currentPage.value = 1
+      onChange(1)
     }
 
     function onClickLast () {
@@ -262,6 +263,7 @@ export default defineComponent({
       }
 
       currentPage.value = pages.value.length
+      onChange(pages.value.length)
     }
 
     function onClickPage (page: number | string) {
@@ -270,6 +272,7 @@ export default defineComponent({
       }
 
       currentPage.value = page
+      onChange(page)
     }
 
     function onClickPrev () {
@@ -278,6 +281,7 @@ export default defineComponent({
       }
 
       currentPage.value--
+      onChange(currentPage.value - 1)
     }
 
     function onClickNext () {
@@ -286,6 +290,11 @@ export default defineComponent({
       }
 
       currentPage.value++
+      onChange(currentPage.value + 1)
+    }
+
+    function onChange (page: number) {
+      emit('change', { page, pageCount: props.pageCount })
     }
 
     return {

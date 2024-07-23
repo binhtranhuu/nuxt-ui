@@ -1,85 +1,91 @@
 <template>
   <div :class="ui.wrapper" v-bind="attrs">
-    <table :class="[ui.base, ui.divide]">
-      <slot v-if="$slots.caption || caption" name="caption">
-        <caption :class="ui.caption">
-          {{ caption }}
-        </caption>
-      </slot>
-      <thead :class="ui.thead">
-        <tr :class="ui.tr.base">
-          <th v-if="modelValue" scope="col" :class="ui.checkbox.padding">
-            <UCheckbox :model-value="indeterminate || selected.length === rows.length" :indeterminate="indeterminate" v-bind="ui.default.checkbox" aria-label="Select all" @change="onChange" />
-          </th>
+    <div :class="[border && ui.border, border && ui.rounded]">
+      <table :class="[ui.base, ui.divide]">
+        <slot v-if="$slots.caption || caption" name="caption">
+          <caption :class="ui.caption">
+            {{ caption }}
+          </caption>
+        </slot>
+        <thead :class="ui.thead">
+          <tr :class="ui.tr.base">
+            <th v-if="modelValue" scope="col" :class="ui.checkbox.padding">
+              <UCheckbox :model-value="indeterminate || selected.length === rows.length" :indeterminate="indeterminate" v-bind="ui.default.checkbox" aria-label="Select all" @change="onChange" />
+            </th>
 
-          <th
-            v-for="(column, index) in columns"
-            :key="index"
-            scope="col"
-            :class="[ui.th.base, ui.th.padding, ui.th.color, ui.th.font, ui.th.size, column.class]"
-            :aria-sort="getAriaSort(column)"
-          >
-            <slot :name="`${column.key}-header`" :column="column" :sort="sort" :on-sort="onSort">
-              <UButton
-                v-if="column.sortable"
-                v-bind="{ ...(ui.default.sortButton || {}), ...sortButton }"
-                :icon="(!sort.column || sort.column !== column.key) ? (sortButton.icon || ui.default.sortButton.icon) : sort.direction === 'asc' ? sortAscIcon : sortDescIcon"
-                :label="column[columnAttribute]"
-                @click="onSort(column)"
-              />
-              <span v-else>{{ column[columnAttribute] }}</span>
-            </slot>
-          </th>
-        </tr>
+            <th
+              v-for="(column, index) in columns"
+              :key="index"
+              scope="col"
+              :class="[ui.th.base, ui.th.padding, ui.th.color, ui.th.font, ui.th.size, column.class]"
+              :aria-sort="getAriaSort(column)"
+            >
+              <slot :name="`${column.key}-header`" :column="column" :sort="sort" :on-sort="onSort">
+                <UButton
+                  v-if="column.sortable"
+                  v-bind="{ ...(ui.default.sortButton || {}), ...sortButton }"
+                  :icon="(!sort.column || sort.column !== column.key) ? (sortButton.icon || ui.default.sortButton.icon) : sort.direction === 'asc' ? sortAscIcon : sortDescIcon"
+                  :label="column[columnAttribute]"
+                  @click="onSort(column)"
+                />
+                <span v-else>{{ column[columnAttribute] }}</span>
+              </slot>
+            </th>
+          </tr>
 
-        <tr v-if="loading && progress">
-          <td :colspan="0" :class="ui.progress.wrapper">
-            <UProgress v-bind="{ ...(ui.default.progress || {}), ...progress }" size="2xs" />
-          </td>
-        </tr>
-      </thead>
-      <tbody :class="ui.tbody">
-        <tr v-if="loadingState && loading && !rows.length">
-          <td :colspan="columns.length + (modelValue ? 1 : 0)">
-            <slot name="loading-state">
-              <div :class="ui.loadingState.wrapper">
-                <UIcon v-if="loadingState.icon" :name="loadingState.icon" :class="ui.loadingState.icon" aria-hidden="true" />
-                <p :class="ui.loadingState.label">
-                  {{ loadingState.label }}
-                </p>
-              </div>
-            </slot>
-          </td>
-        </tr>
-
-        <tr v-else-if="emptyState && !rows.length">
-          <td :colspan="columns.length + (modelValue ? 1 : 0)">
-            <slot name="empty-state">
-              <div :class="ui.emptyState.wrapper">
-                <UIcon v-if="emptyState.icon" :name="emptyState.icon" :class="ui.emptyState.icon" aria-hidden="true" />
-                <p :class="ui.emptyState.label">
-                  {{ emptyState.label }}
-                </p>
-              </div>
-            </slot>
-          </td>
-        </tr>
-
-        <template v-else>
-          <tr v-for="(row, index) in rows" :key="index" :class="[ui.tr.base, isSelected(row) && ui.tr.selected, $attrs.onSelect && ui.tr.active, row?.class]" @click="() => onSelect(row)">
-            <td v-if="modelValue" :class="ui.checkbox.padding">
-              <UCheckbox v-model="selected" :value="row" v-bind="ui.default.checkbox" aria-label="Select row" @click.stop />
+          <tr v-if="loading && progress">
+            <td :colspan="0" :class="ui.progress.wrapper">
+              <UProgress v-bind="{ ...(ui.default.progress || {}), ...progress }" size="2xs" />
             </td>
-
-            <td v-for="(column, subIndex) in columns" :key="subIndex" :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size, row[column.key]?.class]">
-              <slot :name="`${column.key}-data`" :column="column" :row="row" :index="index" :get-row-data="(defaultValue) => getRowData(row, column.key, defaultValue)">
-                {{ getRowData(row, column.key) }}
+          </tr>
+        </thead>
+        <tbody :class="ui.tbody">
+          <tr v-if="loadingState && loading && !rows.length">
+            <td :colspan="columns.length + (modelValue ? 1 : 0)">
+              <slot name="loading-state">
+                <div :class="ui.loadingState.wrapper">
+                  <UIcon v-if="loadingState.icon" :name="loadingState.icon" :class="ui.loadingState.icon" aria-hidden="true" />
+                  <p :class="ui.loadingState.label">
+                    {{ loadingState.label }}
+                  </p>
+                </div>
               </slot>
             </td>
           </tr>
-        </template>
-      </tbody>
-    </table>
+
+          <tr v-else-if="emptyState && !rows.length">
+            <td :colspan="columns.length + (modelValue ? 1 : 0)">
+              <slot name="empty-state">
+                <div :class="ui.emptyState.wrapper">
+                  <UIcon v-if="emptyState.icon" :name="emptyState.icon" :class="ui.emptyState.icon" aria-hidden="true" />
+                  <p :class="ui.emptyState.label">
+                    {{ emptyState.label }}
+                  </p>
+                </div>
+              </slot>
+            </td>
+          </tr>
+
+          <template v-else>
+            <tr v-for="(row, index) in rows" :key="index" :class="[ui.tr.base, isSelected(row) && ui.tr.selected, $attrs.onSelect && ui.tr.active, row?.class]" @click="() => onSelect(row)">
+              <td v-if="modelValue" :class="ui.checkbox.padding">
+                <UCheckbox v-model="selected" :value="row" v-bind="ui.default.checkbox" aria-label="Select row" @click.stop />
+              </td>
+
+              <td v-for="(column, subIndex) in columns" :key="subIndex" :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size, row[column.key]?.class]">
+                <slot :name="`${column.key}-data`" :column="column" :row="row" :index="index" :get-row-data="(defaultValue) => getRowData(row, column.key, defaultValue)">
+                  {{ getRowData(row, column.key) }}
+                </slot>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <div v-if="Object.keys(pagination || {}).length" :class="ui.pagination">
+      <UPagination v-bind="{ ...pagination }" @change="onPaginationChange" />
+    </div>
   </div>
 </template>
 
@@ -88,17 +94,20 @@ import { computed, defineComponent, toRaw, toRef } from 'vue'
 import type { PropType, AriaAttributes } from 'vue'
 import { upperFirst } from 'scule'
 import { defu } from 'defu'
+import { pick } from 'lodash-es'
 import { useVModel } from '@vueuse/core'
 import UIcon from '../elements/Icon.vue'
 import UButton from '../elements/Button.vue'
 import UProgress from '../elements/Progress.vue'
 import UCheckbox from '../forms/Checkbox.vue'
+import UPagination from '../navigation/Pagination.vue'
 import { useUI } from '../../composables/useUI'
 import { mergeConfig, get } from '../../utils'
 import type { Strategy, Button, ProgressColor, ProgressAnimation } from '../../types'
 // @ts-expect-error
 import appConfig from '#build/app.config'
 import { table } from '#ui/ui.config'
+
 
 const config = mergeConfig<typeof table>(appConfig.ui.strategy, appConfig.ui.table, table)
 
@@ -132,7 +141,8 @@ export default defineComponent({
     UIcon,
     UButton,
     UProgress,
-    UCheckbox
+    UCheckbox,
+    UPagination
   },
   inheritAttrs: false,
   props: {
@@ -180,6 +190,10 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    border: {
+      type: Boolean,
+      default: true
+    },
     loadingState: {
       type: Object as PropType<{ icon: string, label: string }>,
       default: () => config.default.loadingState
@@ -196,6 +210,10 @@ export default defineComponent({
       type: Object as PropType<{ color: ProgressColor, animation: ProgressAnimation }>,
       default: () => config.default.progress
     },
+    pagination: {
+      type: Object as PropType<Partial<InstanceType<typeof UPagination>['$props']>>,
+      default: () => ({})
+    },
     class: {
       type: [String, Object, Array] as PropType<any>,
       default: () => ''
@@ -205,7 +223,7 @@ export default defineComponent({
       default: () => ({})
     }
   },
-  emits: ['update:modelValue', 'update:sort'],
+  emits: ['update:modelValue', 'update:sort', 'change'],
   setup (props, { emit, attrs: $attrs }) {
     const { ui, attrs } = useUI('table', toRef(props, 'ui'), config, toRef(props, 'class'))
 
@@ -281,6 +299,8 @@ export default defineComponent({
       } else {
         sort.value = { column: column.key, direction: column.direction || 'asc' }
       }
+
+      emit('change', { sort: sort.value, pagination: pick(props.pagination, ['page', 'pageCount']) })
     }
 
     function onSelect (row) {
@@ -336,6 +356,10 @@ export default defineComponent({
       return undefined
     }
 
+    function onPaginationChange (paginate: { page: number; pageCount: number }) {
+      emit('change', { sort: sort.value, pagination: paginate })
+    }
+
     return {
       // eslint-disable-next-line vue/no-dupe-keys
       ui,
@@ -356,6 +380,7 @@ export default defineComponent({
       onSort,
       onSelect,
       onChange,
+      onPaginationChange,
       getRowData,
       getAriaSort
     }
