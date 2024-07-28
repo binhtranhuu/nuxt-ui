@@ -1,4 +1,6 @@
+import type { Ref } from 'vue'
 import type { Awaitable, Mutable } from './typescript'
+import type { UploadAjaxError } from '../utils/ajax'
 
 export interface UploadContext {
   accept: Ref<string>;
