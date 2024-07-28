@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, toRef, onMounted, defineComponent } from 'vue'
+import { ref, computed, toRef, onMounted, onBeforeUnmount, defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import { twMerge, twJoin } from 'tailwind-merge'
 import UIcon from '../elements/Icon.vue'
@@ -81,6 +81,10 @@ export default defineComponent({
     disabled: {
       type: Boolean,
       default: false
+    },
+    delay: {
+      type: Number,
+      default: 0
     },
     autofocus: {
       type: Boolean,
@@ -171,6 +175,9 @@ export default defineComponent({
 
     const { emitFormBlur, emitFormInput, size: sizeFormGroup, color, inputId, name } = useFormGroup(props, config)
 
+    const timeoutAutofocusDelay = ref(null)
+    const timeoutUpdateModelValueDelay = ref(null)
+
     const size = computed(() => sizeButtonGroup.value || sizeFormGroup.value)
 
     const modelModifiers = ref(defu({}, props.modelModifiers, { trim: false, lazy: false, number: false }))
@@ -200,7 +207,10 @@ export default defineComponent({
 
     const onInput = (event: Event) => {
       if (!modelModifiers.value.lazy) {
-        updateInput((event.target as HTMLInputElement).value)
+        clearTimeout(timeoutUpdateModelValueDelay.value)
+        timeoutUpdateModelValueDelay.value = setTimeout(() => {
+          updateInput((event.target as HTMLInputElement).value)
+        }, props.delay)
       }
     }
 
@@ -227,9 +237,15 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      setTimeout(() => {
+      clearTimeout(timeoutAutofocusDelay.value)
+      timeoutAutofocusDelay.value = setTimeout(() => {
         autoFocus()
       }, props.autofocusDelay)
+    })
+
+    onBeforeUnmount(() => {
+      clearTimeout(timeoutAutofocusDelay.value)
+      clearTimeout(timeoutUpdateModelValueDelay.value)
     })
 
     const inputClass = computed(() => {
