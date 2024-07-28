@@ -3,6 +3,8 @@ export default defineNuxtConfig({
     '../src/module'
   ],
 
+  compatibilityDate: '2024-07-23',
+
   vite: {
     optimizeDeps: {
       esbuildOptions: {

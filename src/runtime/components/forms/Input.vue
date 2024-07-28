@@ -178,7 +178,7 @@ export default defineComponent({
     const timeoutAutofocusDelay = ref(null)
     const timeoutUpdateModelValueDelay = ref(null)
 
-    const size = computed(() => sizeButtonGroup.value || sizeFormGroup.value)
+    const size = computed(() => sizeButtonGroup.value ?? sizeFormGroup.value)
 
     const modelModifiers = ref(defu({}, props.modelModifiers, { trim: false, lazy: false, number: false }))
 

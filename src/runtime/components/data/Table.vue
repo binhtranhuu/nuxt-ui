@@ -13,6 +13,10 @@
               <UCheckbox :model-value="indeterminate || selected.length === rows.length" :indeterminate="indeterminate" v-bind="ui.default.checkbox" aria-label="Select all" @change="onChange" />
             </th>
 
+            <th v-if="$slots.expand" scope="col" :class="ui.tr.base">
+              <span class="sr-only">Expand</span>
+            </th>
+
             <th
               v-for="(column, index) in columns"
               :key="index"
@@ -67,17 +71,39 @@
           </tr>
 
           <template v-else>
-            <tr v-for="(row, index) in rows" :key="index" :class="[ui.tr.base, isSelected(row) && ui.tr.selected, $attrs.onSelect && ui.tr.active, row?.class]" @click="() => onSelect(row)">
-              <td v-if="modelValue" :class="ui.checkbox.padding">
-                <UCheckbox v-model="selected" :value="row" v-bind="ui.default.checkbox" aria-label="Select row" @click.stop />
-              </td>
+            <template v-for="(row, index) in rows" :key="index">
+              <tr :class="[ui.tr.base, isSelected(row) && ui.tr.selected, $attrs.onSelect && ui.tr.active, row?.class]" @click="() => onSelect(row)">
+                <td v-if="modelValue" :class="ui.checkbox.padding">
+                  <UCheckbox v-model="selected" :value="row" v-bind="ui.default.checkbox" aria-label="Select row" @click.stop />
+                </td>
 
-              <td v-for="(column, subIndex) in columns" :key="subIndex" :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size, row[column.key]?.class]">
-                <slot :name="`${column.key}-data`" :column="column" :row="row" :index="index" :get-row-data="(defaultValue) => getRowData(row, column.key, defaultValue)">
-                  {{ getRowData(row, column.key) }}
-                </slot>
-              </td>
-            </tr>
+                <td
+                  v-if="$slots.expand"
+                  :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size]"
+                >
+                  <UButton
+                    v-bind="{ ...(ui.default.expandButton || {}), ...expandButton }"
+                    :ui="{ icon: { base: [ui.expand.icon, openedRows.includes(index) && 'rotate-180'] } }"
+                    @click="toggleOpened(index)"
+                  />
+                </td>
+
+                <td v-for="(column, subIndex) in columns" :key="subIndex" :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size, column?.rowClass, row[column.key]?.class]">
+                  <slot :name="`${column.key}-data`" :column="column" :row="row" :index="index" :get-row-data="(defaultValue) => getRowData(row, column.key, defaultValue)">
+                    {{ getRowData(row, column.key) }}
+                  </slot>
+                </td>
+              </tr>
+              <tr v-if="openedRows.includes(index)">
+                <td colspan="100%">
+                  <slot
+                    name="expand"
+                    :row="row"
+                    :index="index"
+                  />
+                </td>
+              </tr>
+            </template>
           </template>
         </tbody>
       </table>
@@ -90,7 +116,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRaw, toRef } from 'vue'
+import { ref, computed, defineComponent, toRaw, toRef } from 'vue'
 import type { PropType, AriaAttributes } from 'vue'
 import { upperFirst } from 'scule'
 import { defu } from 'defu'
@@ -133,6 +159,7 @@ interface Column {
   sort?: (a: any, b: any, direction: 'asc' | 'desc') => number
   direction?: 'asc' | 'desc'
   class?: string
+  rowClass?: string
   [key: string]: any
 }
 
@@ -186,6 +213,10 @@ export default defineComponent({
       type: String,
       default: () => config.default.sortDescIcon
     },
+    expandButton: {
+      type: Object as PropType<Button>,
+      default: () => config.default.expandButton as Button
+    },
     loading: {
       type: Boolean,
       default: false
@@ -227,9 +258,11 @@ export default defineComponent({
   setup (props, { emit, attrs: $attrs }) {
     const { ui, attrs } = useUI('table', toRef(props, 'ui'), config, toRef(props, 'class'))
 
-    const columns = computed(() => props.columns ?? Object.keys(props.rows[0] ?? {}).map((key) => ({ key, label: upperFirst(key), sortable: false, class: undefined, sort: defaultSort })))
+    const columns = computed(() => props.columns ?? Object.keys(props.rows[0] ?? {}).map((key) => ({ key, label: upperFirst(key), sortable: false, class: undefined, sort: defaultSort }) as Column))
 
     const sort = useVModel(props, 'sort', emit, { passive: true, defaultValue: defu({}, props.sort, { column: null, direction: 'asc' }) })
+
+    const openedRows = ref([])
 
     const savedSort = { column: sort.value.column, direction: null }
 
@@ -336,6 +369,14 @@ export default defineComponent({
       return get(row, rowKey, defaultValue)
     }
 
+    function toggleOpened (index: number) {
+      if (openedRows.value.includes(index)) {
+        openedRows.value = openedRows.value.filter((i) => i !== index)
+      } else {
+        openedRows.value.push(index)
+      }
+    }
+
     function getAriaSort (column: Column): AriaAttributes['aria-sort'] {
       if (!column.sortable) {
         return undefined
@@ -376,12 +417,14 @@ export default defineComponent({
       emptyState,
       // eslint-disable-next-line vue/no-dupe-keys
       loadingState,
+      openedRows,
       isSelected,
       onSort,
       onSelect,
       onChange,
       onPaginationChange,
       getRowData,
+      toggleOpened,
       getAriaSort
     }
   }
