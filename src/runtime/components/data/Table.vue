@@ -1,111 +1,117 @@
 <template>
   <div :class="ui.wrapper" v-bind="attrs">
-    <table :class="[ui.base, ui.divide]">
-      <slot v-if="$slots.caption || caption" name="caption">
-        <caption :class="ui.caption">
-          {{ caption }}
-        </caption>
-      </slot>
-      <thead :class="ui.thead">
-        <tr :class="ui.tr.base">
-          <th v-if="modelValue" scope="col" :class="ui.checkbox.padding">
-            <UCheckbox :model-value="indeterminate || selected.length === rows.length" :indeterminate="indeterminate" v-bind="ui.default.checkbox" aria-label="Select all" @change="onChange" />
-          </th>
+    <div :class="[border && ui.border, border && ui.rounded]">
+      <table :class="[ui.base, ui.divide]">
+        <slot v-if="$slots.caption || caption" name="caption">
+          <caption :class="ui.caption">
+            {{ caption }}
+          </caption>
+        </slot>
+        <thead :class="ui.thead">
+          <tr :class="ui.tr.base">
+            <th v-if="modelValue" scope="col" :class="ui.checkbox.padding">
+              <UCheckbox :model-value="indeterminate || selected.length === rows.length" :indeterminate="indeterminate" v-bind="ui.default.checkbox" aria-label="Select all" @change="onChange" />
+            </th>
 
-          <th v-if="$slots.expand" scope="col" :class="ui.tr.base">
-            <span class="sr-only">Expand</span>
-          </th>
+            <th v-if="$slots.expand" scope="col" :class="ui.tr.base">
+              <span class="sr-only">Expand</span>
+            </th>
 
-          <th
-            v-for="(column, index) in columns"
-            :key="index"
-            scope="col"
-            :class="[ui.th.base, ui.th.padding, ui.th.color, ui.th.font, ui.th.size, column.class]"
-            :aria-sort="getAriaSort(column)"
-          >
-            <slot :name="`${column.key}-header`" :column="column" :sort="sort" :on-sort="onSort">
-              <UButton
-                v-if="column.sortable"
-                v-bind="{ ...(ui.default.sortButton || {}), ...sortButton }"
-                :icon="(!sort.column || sort.column !== column.key) ? (sortButton.icon || ui.default.sortButton.icon) : sort.direction === 'asc' ? sortAscIcon : sortDescIcon"
-                :label="column[columnAttribute]"
-                @click="onSort(column)"
-              />
-              <span v-else>{{ column[columnAttribute] }}</span>
-            </slot>
-          </th>
-        </tr>
-
-        <tr v-if="loading && progress">
-          <td :colspan="0" :class="ui.progress.wrapper">
-            <UProgress v-bind="{ ...(ui.default.progress || {}), ...progress }" size="2xs" />
-          </td>
-        </tr>
-      </thead>
-      <tbody :class="ui.tbody">
-        <tr v-if="loadingState && loading && !rows.length">
-          <td :colspan="columns.length + (modelValue ? 1 : 0)">
-            <slot name="loading-state">
-              <div :class="ui.loadingState.wrapper">
-                <UIcon v-if="loadingState.icon" :name="loadingState.icon" :class="ui.loadingState.icon" aria-hidden="true" />
-                <p :class="ui.loadingState.label">
-                  {{ loadingState.label }}
-                </p>
-              </div>
-            </slot>
-          </td>
-        </tr>
-
-        <tr v-else-if="emptyState && !rows.length">
-          <td :colspan="columns.length + (modelValue ? 1 : 0)">
-            <slot name="empty-state">
-              <div :class="ui.emptyState.wrapper">
-                <UIcon v-if="emptyState.icon" :name="emptyState.icon" :class="ui.emptyState.icon" aria-hidden="true" />
-                <p :class="ui.emptyState.label">
-                  {{ emptyState.label }}
-                </p>
-              </div>
-            </slot>
-          </td>
-        </tr>
-
-        <template v-else>
-          <template v-for="(row, index) in rows" :key="index">
-            <tr :class="[ui.tr.base, isSelected(row) && ui.tr.selected, $attrs.onSelect && ui.tr.active, row?.class]" @click="() => onSelect(row)">
-              <td v-if="modelValue" :class="ui.checkbox.padding">
-                <UCheckbox v-model="selected" :value="row" v-bind="ui.default.checkbox" aria-label="Select row" @click.stop />
-              </td>
-
-              <td
-                v-if="$slots.expand"
-                :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size]"
-              >
+            <th
+              v-for="(column, index) in columns"
+              :key="index"
+              scope="col"
+              :class="[ui.th.base, ui.th.padding, ui.th.color, ui.th.font, ui.th.size, column.class]"
+              :aria-sort="getAriaSort(column)"
+            >
+              <slot :name="`${column.key}-header`" :column="column" :sort="sort" :on-sort="onSort">
                 <UButton
-                  v-bind="{ ...(ui.default.expandButton || {}), ...expandButton }"
-                  :ui="{ icon: { base: [ui.expand.icon, openedRows.includes(index) && 'rotate-180'] } }"
-                  @click="toggleOpened(index)"
+                  v-if="column.sortable"
+                  v-bind="{ ...(ui.default.sortButton || {}), ...sortButton }"
+                  :icon="(!sort.column || sort.column !== column.key) ? (sortButton.icon || ui.default.sortButton.icon) : sort.direction === 'asc' ? sortAscIcon : sortDescIcon"
+                  :label="column[columnAttribute]"
+                  @click="onSort(column)"
                 />
-              </td>
+                <span v-else>{{ column[columnAttribute] }}</span>
+              </slot>
+            </th>
+          </tr>
 
-              <td v-for="(column, subIndex) in columns" :key="subIndex" :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size, column?.rowClass, row[column.key]?.class]">
-                <slot :name="`${column.key}-data`" :column="column" :row="row" :index="index" :get-row-data="(defaultValue) => getRowData(row, column.key, defaultValue)">
-                  {{ getRowData(row, column.key) }}
-                </slot>
-              </td>
-            </tr>
-            <tr v-if="openedRows.includes(index)">
-              <td colspan="100%">
-                <slot
-                  name="expand"
-                  :row="row"
-                  :index="index"
-                />
-              </td>
-            </tr>
+          <tr v-if="loading && progress">
+            <td :colspan="0" :class="ui.progress.wrapper">
+              <UProgress v-bind="{ ...(ui.default.progress || {}), ...progress }" size="2xs" />
+            </td>
+          </tr>
+        </thead>
+        <tbody :class="ui.tbody">
+          <tr v-if="loadingState && loading && !rows.length">
+            <td :colspan="columns.length + (modelValue ? 1 : 0)">
+              <slot name="loading-state">
+                <div :class="ui.loadingState.wrapper">
+                  <UIcon v-if="loadingState.icon" :name="loadingState.icon" :class="ui.loadingState.icon" aria-hidden="true" />
+                  <p :class="ui.loadingState.label">
+                    {{ loadingState.label }}
+                  </p>
+                </div>
+              </slot>
+            </td>
+          </tr>
+
+          <tr v-else-if="emptyState && !rows.length">
+            <td :colspan="columns.length + (modelValue ? 1 : 0)">
+              <slot name="empty-state">
+                <div :class="ui.emptyState.wrapper">
+                  <UIcon v-if="emptyState.icon" :name="emptyState.icon" :class="ui.emptyState.icon" aria-hidden="true" />
+                  <p :class="ui.emptyState.label">
+                    {{ emptyState.label }}
+                  </p>
+                </div>
+              </slot>
+            </td>
+          </tr>
+
+          <template v-else>
+            <template v-for="(row, index) in rows" :key="index">
+              <tr :class="[ui.tr.base, isSelected(row) && ui.tr.selected, $attrs.onSelect && ui.tr.active, row?.class]" @click="() => onSelect(row)">
+                <td v-if="modelValue" :class="ui.checkbox.padding">
+                  <UCheckbox v-model="selected" :value="row" v-bind="ui.default.checkbox" aria-label="Select row" @click.stop />
+                </td>
+
+                <td
+                  v-if="$slots.expand"
+                  :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size]"
+                >
+                  <UButton
+                    v-bind="{ ...(ui.default.expandButton || {}), ...expandButton }"
+                    :ui="{ icon: { base: [ui.expand.icon, openedRows.includes(index) && 'rotate-180'] } }"
+                    @click="toggleOpened(index)"
+                  />
+                </td>
+
+                <td v-for="(column, subIndex) in columns" :key="subIndex" :class="[ui.td.base, ui.td.padding, ui.td.color, ui.td.font, ui.td.size, column?.rowClass, row[column.key]?.class]">
+                  <slot :name="`${column.key}-data`" :column="column" :row="row" :index="index" :get-row-data="(defaultValue) => getRowData(row, column.key, defaultValue)">
+                    {{ getRowData(row, column.key) }}
+                  </slot>
+                </td>
+              </tr>
+              <tr v-if="openedRows.includes(index)">
+                <td colspan="100%">
+                  <slot
+                    name="expand"
+                    :row="row"
+                    :index="index"
+                  />
+                </td>
+              </tr>
+            </template>
           </template>
-        </template>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
+
+    <div v-if="Object.keys(pagination || {}).length" :class="ui.pagination">
+      <UPagination v-bind="{ ...pagination }" @change="onPaginationChange" />
+    </div>
   </div>
 </template>
 
@@ -120,6 +126,7 @@ import UIcon from '../elements/Icon.vue'
 import UButton from '../elements/Button.vue'
 import UProgress from '../elements/Progress.vue'
 import UCheckbox from '../forms/Checkbox.vue'
+import UPagination from '../navigation/Pagination.vue'
 import { useUI } from '../../composables/useUI'
 import { mergeConfig, get } from '../../utils'
 import type { Strategy, Button, ProgressColor, ProgressAnimation } from '../../types'
