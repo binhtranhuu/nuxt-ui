@@ -30,7 +30,7 @@
         </slot>
       </span>
 
-      <HComboboxButton v-if="(isTrailing && trailingIconName) || $slots.trailing" ref="trigger" :class="trailingWrapperIconClass">
+      <HComboboxButton v-if="(isTrailing && trailingIconName) || $slots.trailing" ref="trigger" :class="trailingWrapperIconClass" @click.stop="onTrailingClick">
         <slot name="trailing" :disabled="disabled" :loading="loading">
           <UIcon :name="trailingIconName" :class="trailingIconClass" />
         </slot>
@@ -103,6 +103,7 @@ import {
 } from '@headlessui/vue'
 import { computedAsync, useDebounceFn } from '@vueuse/core'
 import { defu } from 'defu'
+import { isObject } from 'lodash-es'
 import { twMerge, twJoin } from 'tailwind-merge'
 import UIcon from '../elements/Icon.vue'
 import UAvatar from '../elements/Avatar.vue'
@@ -192,6 +193,14 @@ export default defineComponent({
     selectedIcon: {
       type: String,
       default: () => configMenu.default.selectedIcon
+    },
+    clearable: {
+      type: Boolean,
+      default: false
+    },
+    clearIcon: {
+      type: String,
+      default: () => configMenu.default.clearIcon
     },
     disabled: {
       type: Boolean,
@@ -303,6 +312,10 @@ export default defineComponent({
       }
     })
 
+    const isSelected = computed(() => {
+      return Array.isArray(props.modelValue) ? !!props.modelValue.length : isObject(props.modelValue) ? !!Object.keys(props.modelValue).length : !!props.modelValue
+    })
+
     const label = computed(() => {
       if (!props.modelValue) {
         return
@@ -351,6 +364,10 @@ export default defineComponent({
     const trailingIconName = computed(() => {
       if (props.loading && !isLeading.value) {
         return props.loadingIcon
+      }
+
+      if (props.clearable && isSelected.value) {
+        return props.clearIcon
       }
 
       return props.trailingIcon || props.icon
@@ -419,6 +436,12 @@ export default defineComponent({
       })
     })
 
+    function onTrailingClick () {
+      if (props.clearable && isSelected.value) {
+        emit('update:modelValue', Array.isArray(props.modelValue) ? [] : null)
+      }
+    }
+
     watch(container, (value) => {
       if (value) {
         emit('open')
@@ -470,7 +493,8 @@ export default defineComponent({
       // eslint-disable-next-line vue/no-dupe-keys
       query,
       onUpdate,
-      onQueryChange
+      onQueryChange,
+      onTrailingClick
     }
   }
 })

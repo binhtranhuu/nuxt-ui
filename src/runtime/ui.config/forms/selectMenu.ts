@@ -11,6 +11,9 @@ export default {
     ...inputMenu.option,
     create: 'block truncate'
   },
+  clearable: {
+    pointer: 'pointer-events-auto cursor-pointer'
+  },
   // Syntax for `<Transition>` component https://vuejs.org/guide/built-ins/transition.html#css-based-transitions
   transition: {
     leaveActiveClass: 'transition ease-in duration-100',
@@ -22,6 +25,7 @@ export default {
   },
   default: {
     selectedIcon: 'i-heroicons-check-20-solid',
+    clearIcon: 'i-heroicons-x-circle-20-solid',
     clearSearchOnClose: false,
     showCreateOptionWhen: 'empty'
   },
