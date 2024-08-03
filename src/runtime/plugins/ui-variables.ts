@@ -11,9 +11,10 @@ export default defineNuxtPlugin(() => {
       const mergeVariables = mergeConfig<typeof variables>(appConfig.ui.strategy, appConfig.ui.variables, variables)
 
       return `:root {
-        --header-height: ${mergeVariables?.header.height};
-        --ui-background: ${mergeVariables?.light?.background};
-        --ui-foreground: ${mergeVariables?.light?.foreground};
+          --header-height: ${mergeVariables?.header.height};
+          --ui-background: ${mergeVariables?.light?.background};
+          --ui-foreground: ${mergeVariables?.light?.foreground};
+        }
 
         .dark {
           --ui-background: ${mergeVariables?.dark?.background};
@@ -26,8 +27,8 @@ export default defineNuxtPlugin(() => {
   const headData: any = {
     style: [{
       innerHTML: () => root.value,
-      tagPriority: -2,
-      id: 'nuxt-ui-root'
+      tagPriority: -3,
+      id: 'nuxt-ui-variables'
     }]
   }
 
@@ -36,11 +37,11 @@ export default defineNuxtPlugin(() => {
     const style = document.createElement('style')
 
     style.innerHTML = root.value
-    style.setAttribute('data-nuxt-ui-root', '')
+    style.setAttribute('data-nuxt-ui-variables', '')
     document.head.appendChild(style)
 
     headData.script = [{
-      innerHTML: 'document.head.removeChild(document.querySelector(\'[data-nuxt-ui-root]\'))'
+      innerHTML: 'document.head.removeChild(document.querySelector(\'[data-nuxt-ui-variables]\'))'
     }]
   }
 
