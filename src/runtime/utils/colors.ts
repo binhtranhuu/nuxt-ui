@@ -234,6 +234,12 @@ export const setGlobalColors = (theme: TWConfig['theme']) => {
   }
 
   // @ts-ignore
+  globalColors.background = theme.extend.colors.background = 'rgb(var(--ui-background) / <alpha-value>)'
+
+  // @ts-ignore
+  globalColors.foreground = theme.extend.colors.foreground = 'rgb(var(--ui-foreground) / <alpha-value>)'
+
+  // @ts-ignore
   globalColors.primary = theme.extend.colors.primary = {
     50: 'rgb(var(--color-primary-50) / <alpha-value>)',
     100: 'rgb(var(--color-primary-100) / <alpha-value>)',
