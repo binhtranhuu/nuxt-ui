@@ -37,6 +37,7 @@ export { default as card } from './layout/card'
 export { default as container } from './layout/container'
 export { default as skeleton } from './layout/skeleton'
 export { default as divider } from './layout/divider'
+export { default as header } from './layout/header'
 
 // Navigation
 export { default as verticalNavigation } from './navigation/verticalNavigation'
