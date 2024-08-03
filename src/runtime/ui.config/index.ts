@@ -57,3 +57,6 @@ export { default as popover } from './overlays/popover'
 export { default as contextMenu } from './overlays/contextMenu'
 export { default as notification } from './overlays/notification'
 export { default as notifications } from './overlays/notifications'
+
+// Root
+export { default as variables } from './variables'

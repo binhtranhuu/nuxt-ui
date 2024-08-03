@@ -108,6 +108,10 @@ export default defineNuxtModule<ModuleOptions>({
       src: resolve(runtimeDir, 'plugins', 'intersection-observer')
     })
 
+    addPlugin({
+      src: resolve(runtimeDir, 'plugins', 'ui')
+    })
+
     // Components
 
     addComponentsDir({
