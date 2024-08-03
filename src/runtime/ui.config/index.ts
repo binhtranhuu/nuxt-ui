@@ -40,6 +40,7 @@ export { default as divider } from './layout/divider'
 export { default as header } from './layout/header'
 export { default as main } from './layout/main'
 export { default as page } from './layout/page'
+export { default as footer } from './layout/footer'
 
 // Navigation
 export { default as verticalNavigation } from './navigation/verticalNavigation'
