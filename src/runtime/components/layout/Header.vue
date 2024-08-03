@@ -73,7 +73,7 @@ import type { Strategy } from '../../types'
 import appConfig from '#build/app.config'
 import { header } from '#ui/ui.config'
 
-const config = mergeConfig<typeof header>(appConfig.ui.strategy, appConfig.ui.card, header)
+const config = mergeConfig<typeof header>(appConfig.ui.strategy, appConfig.ui.header, header)
 
 export default defineComponent({
   inheritAttrs: false,
