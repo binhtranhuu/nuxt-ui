@@ -109,7 +109,7 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     addPlugin({
-      src: resolve(runtimeDir, 'plugins', 'ui')
+      src: resolve(runtimeDir, 'plugins', 'ui-variables')
     })
 
     // Components
