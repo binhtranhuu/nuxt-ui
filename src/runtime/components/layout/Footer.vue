@@ -5,7 +5,7 @@
         <slot name="top" />
       </div>
     </div>
-    <div v-if="$slots.bottom" :class="ui.bottom.wrapper">
+    <div :class="ui.bottom.wrapper">
       <div :class="ui.bottom.container">
         <div v-if="$slots.left" :class="ui.bottom.left">
           <slot name="left" />
