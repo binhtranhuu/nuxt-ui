@@ -52,6 +52,10 @@ export interface ModuleOptions {
    * Disables the global css styles added by the module.
    */
   disableGlobalStyles?: boolean
+  /**
+   * whether overrides the default scrollbars style on Windows
+   */
+  customScrollbars?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -66,7 +70,8 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     prefix: 'U',
     safelistColors: ['primary'],
-    disableGlobalStyles: false
+    disableGlobalStyles: false,
+    customScrollbars: true
   },
   async setup (options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -80,6 +85,10 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (!options.disableGlobalStyles) {
       nuxt.options.css.push(resolve(runtimeDir, 'ui.css'))
+    }
+
+    if (options.customScrollbars) {
+      nuxt.options.css.push(resolve(runtimeDir, 'scrollbar.css'))
     }
 
     createTemplates(nuxt)
