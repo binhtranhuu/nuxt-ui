@@ -49,6 +49,7 @@ export { default as commandPalette } from './navigation/commandPalette'
 export { default as pagination } from './navigation/pagination'
 export { default as tabs } from './navigation/tabs'
 export { default as breadcrumb } from './navigation/breadcrumb'
+export { default as spoiler } from './navigation/spoiler'
 
 // Overlays
 export { default as modal } from './overlays/modal'
