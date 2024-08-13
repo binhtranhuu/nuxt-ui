@@ -1,8 +1,7 @@
 export default {
   wrapper: 'relative',
   spoiler: {
-    container: 'text-center',
-    button: 'absolute top-full'
+    base: 'absolute top-full left-1/2 -translate-x-1/2'
   },
   mask: 'absolute inset-0 bg-gradient-to-b from-background/30 to-background/100',
   content: {

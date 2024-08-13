@@ -1,16 +1,14 @@
 <template>
   <div :class="wrapperClass" v-bind="attrs">
     <slot name="spoiler" v-bind="{ show, onToggleSpoiler }">
-      <div :class="ui.spoiler.container">
-        <UButton
-          v-if="isSpoiler"
-          :class="ui.spoiler.button"
-          v-bind="{ ...(ui.default.spoilerButton || {}), ...spoilerButton }"
-          :label="spoilerMoreContent"
-          :trailing-icon="show ? ui.default.hideIcon : ui.default.showIcon"
-          @click="onToggleSpoiler"
-        />
-      </div>
+      <UButton
+        v-if="isSpoiler"
+        :class="ui.spoiler.base"
+        v-bind="{ ...(ui.default.spoilerButton || {}), ...spoilerButton }"
+        :label="spoilerMoreContent"
+        :trailing-icon="show ? ui.default.hideIcon : ui.default.showIcon"
+        @click="onToggleSpoiler"
+      />
     </slot>
 
     <slot v-if="show === false" name="mask">
