@@ -42,6 +42,7 @@ export { default as page } from './layout/page'
 export { default as footer } from './layout/footer'
 
 // Navigation
+export { default as backtop } from './navigation/backtop'
 export { default as verticalNavigation } from './navigation/verticalNavigation'
 export { default as horizontalNavigation } from './navigation/horizontalNavigation'
 export { default as commandPalette } from './navigation/commandPalette'
