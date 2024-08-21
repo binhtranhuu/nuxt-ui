@@ -1,6 +1,6 @@
 <template>
   <div :class="wrapperClass" v-bind="attrs">
-    <slot v-if="show === false" name="mask">
+    <slot v-if="show === false && isSpoiler" name="mask">
       <div :class="ui.mask" />
     </slot>
 
