@@ -7,7 +7,7 @@
         :name="name"
         :required="required"
         :value="value"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :indeterminate="indeterminate"
         type="checkbox"
         :class="inputClass"
@@ -30,9 +30,10 @@
 </template>
 
 <script lang="ts">
-import { computed, toRef, defineComponent } from 'vue'
+import { computed, toRef, toRaw, defineComponent, inject, ref } from 'vue'
 import type { PropType } from 'vue'
 import { twMerge, twJoin } from 'tailwind-merge'
+import { isArray, isBoolean, isNil } from 'lodash-es'
 import { useUI } from '../../composables/useUI'
 import { useFormGroup } from '../../composables/useFormGroup'
 import { mergeConfig } from '../../utils'
@@ -84,6 +85,20 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    /**
+     * @description value of the Checkbox if it's checked
+     */
+    trueValue: {
+      type: [String, Number],
+      default: undefined
+    },
+    /**
+     * @description value of the Checkbox if it's not checked
+     */
+    falseValue: {
+      type: [String, Number],
+      default: undefined
+    },
     color: {
       type: String as PropType<typeof colors[number]>,
       default: () => config.default.color,
@@ -108,20 +123,73 @@ export default defineComponent({
   setup (props, { emit }) {
     const { ui, attrs } = useUI('checkbox', toRef(props, 'ui'), config, toRef(props, 'class'))
 
+    const checkboxGroup = inject('checkbox-group', null)
     const { emitFormChange, color, name, inputId: _inputId } = useFormGroup(props)
     const inputId = _inputId.value ?? useId()
 
+    const selfModel = ref(false)
+    const isLimitExceeded = ref(false)
+
+    const isGroup = computed(() => !isNil(checkboxGroup))
+
     const toggle = computed({
       get () {
-        return props.modelValue
+        return isGroup.value
+          ? checkboxGroup?.modelValue?.value
+          : props.modelValue ?? selfModel.value
       },
       set (value) {
-        emit('update:modelValue', value)
+        if (isGroup.value && isArray(value)) {
+          isLimitExceeded.value =
+            isNil(checkboxGroup?.max?.value) &&
+            value.length > checkboxGroup?.max.value
+          isLimitExceeded.value === false &&
+            checkboxGroup?.changeEvent?.(value)
+        } else {
+          emit('update:modelValue', value)
+          selfModel.value = value
+        }
       }
     })
 
+    const isChecked = computed(() => {
+      const value = toggle.value
+      if (isBoolean(value)) {
+        return value
+      } else if (isArray(value)) {
+        return value.map(toRaw).includes(props.value)
+      } else if (!isNil(value)) {
+        return value === props.trueValue
+      } else {
+        return !!value
+      }
+    })
+
+    const isLimitDisabled = computed(() => {
+      const max = checkboxGroup?.max?.value
+      const min = checkboxGroup?.min?.value
+      return (
+        (!isNil(max) && toggle.value.length >= max && !isChecked.value) ||
+        (!isNil(min) && toggle.value.length <= min && isChecked.value)
+      )
+    })
+
+    const isDisabled = computed(
+      () =>
+        props.disabled ||
+        checkboxGroup?.disabled?.value ||
+        isLimitDisabled.value
+    )
+
+    const getValue = (value) => {
+      return value === props.trueValue || value === true
+        ? props.trueValue ?? true
+        : props.falseValue ?? false
+    }
+
     const onChange = (event: Event) => {
-      emit('change', (event.target as HTMLInputElement).checked)
+      if (isLimitExceeded.value) return
+      emit('change', getValue((event.target as HTMLInputElement).checked), event)
       emitFormChange()
     }
 
@@ -147,6 +215,7 @@ export default defineComponent({
       name,
       // eslint-disable-next-line vue/no-dupe-keys
       inputClass,
+      isDisabled,
       onChange
     }
   }
