@@ -7,7 +7,7 @@
         :name="name"
         :required="required"
         :value="value"
-        :disabled="disabled"
+        :disabled="isDisabled"
         type="radio"
         :class="inputClass"
         v-bind="attrs"
@@ -29,8 +29,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, toRef } from 'vue'
+import { computed, defineComponent, nextTick, inject, toRef } from 'vue'
 import type { PropType } from 'vue'
+import { isNil } from 'lodash-es'
 import { twMerge, twJoin } from 'tailwind-merge'
 import { useUI } from '../../composables/useUI'
 import { useFormGroup } from '../../composables/useFormGroup'
@@ -106,22 +107,34 @@ export default defineComponent({
     const inputId = props.id ?? useId()
 
     const radioGroup = inject('radio-group', null)
-    const { emitFormChange, color, name } = radioGroup ?? useFormGroup(props, config)
+    const radioGroupOptimize = inject('radio-group-optimize', null)
+    const { emitFormChange, color, name } = radioGroup ?? radioGroupOptimize ?? useFormGroup(props, config)
+
+    const isGroup = computed(() => !isNil(radioGroup))
+    const isGroupOptimize = computed(() => !isNil(radioGroupOptimize))
 
     const pick = computed({
       get () {
-        return props.modelValue
+        return isGroupOptimize.value ? radioGroupOptimize?.modelValue?.value : props.modelValue
       },
       set (value) {
-        emit('update:modelValue', value)
-        if (!radioGroup) {
-          emitFormChange()
+        if (isGroupOptimize.value) {
+          radioGroupOptimize?.changeEvent?.(value)
+        } else {
+          emit('update:modelValue', value)
+          if (isGroup.value === false) {
+            emitFormChange()
+          }
         }
       }
     })
 
-    function onChange (event: Event) {
-      emit('change', (event.target as HTMLInputElement).value)
+    const isDisabled = computed(() => {
+      return props.disabled || radioGroupOptimize?.disabled.value
+    })
+
+    function onChange () {
+      nextTick(() => emit('change', pick.value))
     }
 
     const inputClass = computed(() => {
@@ -145,6 +158,7 @@ export default defineComponent({
       name,
       // eslint-disable-next-line vue/no-dupe-keys
       inputClass,
+      isDisabled,
       onChange
     }
   }
