@@ -167,7 +167,7 @@ export default defineComponent({
       default: () => ({})
     }
   },
-  emits: ['update:modelValue', 'blur', 'change'],
+  emits: ['update:modelValue', 'input', 'blur', 'change'],
   setup (props, { emit, slots }) {
     const { ui, attrs } = useUI('input', toRef(props, 'ui'), config, toRef(props, 'class'))
 
@@ -202,6 +202,7 @@ export default defineComponent({
       }
 
       emit('update:modelValue', value)
+      emit('input', value)
       emitFormInput()
     }
 
