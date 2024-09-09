@@ -78,7 +78,8 @@
     "zod": "^3.23.8"
   },
   "resolutions": {
-    "@binhtranhuu/nuxt-ui": "workspace:*",
-    "nuxt-component-meta": "0.6.4"
+    "@nuxt/ui": "workspace:*",
+    "@nuxt/kit": "3.13.0",
+    "@nuxt/schema": "3.13.0"
   }
 }
