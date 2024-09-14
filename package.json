@@ -1,6 +1,6 @@
 {
-  "name": "@nuxt/ui",
-  "version": "2.18.4",
+  "name": "@binhtranhuu/nuxt-ui",
+  "version": "1.0.12",
   "packageManager": "pnpm@9.10.0",
   "repository": "nuxt/ui",
   "homepage": "https://ui.nuxt.com",
@@ -77,7 +77,7 @@
     "zod": "^3.23.8"
   },
   "resolutions": {
-    "@nuxt/ui": "workspace:*",
+    "@binhtranhuu/nuxt-ui": "workspace:*",
     "@nuxt/kit": "3.13.0",
     "@nuxt/schema": "3.13.0"
   }
